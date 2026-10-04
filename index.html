@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار أساسيات تحليل البيانات</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --text-main: #333333;
+            --text-muted: #7f8c8d;
+            --border: #e0e6ed;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+
+        .question-title {
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fafafa;
+        }
+
+        .option-label:hover {
+            background: #f0f4f8;
+        }
+
+        .option-label input {
+            margin-left: 15px;
+            transform: scale(1.2);
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #1a252f;
+        }
+
+        .btn:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        /* Results Styles */
+        #results-container {
+            display: none;
+        }
+
+        .score-banner {
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .score-banner h2 {
+            margin: 0 0 10px 0;
+            font-size: 32px;
+        }
+
+        .result-item {
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            border-right: 5px solid;
+            background: var(--card-bg);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .result-item.correct {
+            border-right-color: var(--success);
+        }
+
+        .result-item.wrong {
+            border-right-color: var(--danger);
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .icon-success { fill: var(--success); }
+        .icon-danger { fill: var(--danger); }
+        .icon-info { fill: var(--accent); }
+
+        .explanation {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            font-size: 15px;
+            color: var(--text-main);
+        }
+
+        /* Bi-Directional Text Isolation */
+        bdi {
+            font-family: sans-serif;
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>اختبار أساسيات تحليل البيانات</h1>
+        <p>يرجى إدخال اسمك والإجابة على جميع الأسئلة</p>
+    </div>
+
+    <div id="quiz-container">
+        <form id="quiz-form">
+            <div class="card">
+                <div class="input-group">
+                    <label for="student-name">الاسم الثلاثي (إجباري):</label>
+                    <input type="text" id="student-name" required placeholder="أدخل اسمك هنا...">
+                </div>
+            </div>
+
+            <div id="questions-wrapper"></div>
+
+            <button type="submit" class="btn" id="submit-btn">تسليم الإجابات</button>
+        </form>
+    </div>
+
+    <div id="results-container">
+        <div class="score-banner">
+            <h2>النتيجة النهائية</h2>
+            <h1 id="score-display">0 / 23</h1>
+            <p id="score-message"></p>
+        </div>
+        <div id="detailed-results"></div>
+    </div>
+</div>
+
+<script>
+    // 1. PLACE YOUR GOOGLE SCRIPT URL HERE
+    const SCRIPT_URL = 'YOUR_GOOGLE_SCRIPT_URL_HERE';
+
+    // SVGs
+    const svgCheck = `<svg class="icon icon-success" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>`;
+    const svgCross = `<svg class="icon icon-danger" viewBox="0 0 24 24"><path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/></svg>`;
+    const svgInfo = `<svg class="icon icon-info" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>`;
+
+    const quizData = [
+        {
+            q: "البيانات هي \"النفط الجديد\" لأن كلاهما ينفد بالاستخدام مع مرور الوقت.",
+            options: ["صح", "خطأ"],
+            answer: 1,
+            exp: "خطأ. النفط ينفد بالاستخدام، بينما البيانات تتضاعف <bdi>(Data multiplies)</bdi> كلما ضغطنا أو اشترينا أو تصفحنا."
+        },
+        {
+            q: "في تشبيه \"المطعم\"، مهندس البيانات <bdi>(Data Engineer)</bdi> هو \"الطاهي\" الذي يطبخ الوجبة للإجابة على أسئلة العمل.",
+            options: ["صح", "خطأ"],
+            answer: 1,
+            exp: "خطأ. مهندس البيانات هو \"المزارع\" الذي يجلب المكونات. أما \"الطاهي\" فهو محلل البيانات <bdi>(Data Analyst)</bdi>."
+        },
+        {
+            q: "البيانات النوعية <bdi>(Qualitative Data)</bdi> هي البيانات التي يمكن قياسها بالأرقام مثل الإيرادات ودرجة الحرارة.",
+            options: ["صح", "خطأ"],
+            answer: 1,
+            exp: "خطأ. البيانات التي تقاس بالأرقام هي الكمية <bdi>(Quantitative)</bdi>. النوعية تصف الأشياء مثل الأراء والألوان."
+        },
+        {
+            q: "الحصول على مليون إعجاب <bdi>(1 Million Likes)</bdi> يُعتبر دائماً مؤشر أداء رئيسي <bdi>(KPI)</bdi> ممتاز لنجاح الأعمال.",
+            options: ["صح", "خطأ"],
+            answer: 1,
+            exp: "خطأ. الإعجابات هي أمثلة على المقاييس الخادعة <bdi>(Vanity Metrics)</bdi> التي تبدو رائعة ولكن لا تفيد في اتخاذ قرارات مصيرية."
+        },
+        {
+            q: "الخطوة التي تستهلك النصيب الأكبر من وقت محلل البيانات (من 60% إلى 80%) هي خطوة تنظيف البيانات <bdi>(Clean & Prepare)</bdi>.",
+            options: ["صح", "خطأ"],
+            answer: 0,
+            exp: "صح. تجميع البيانات الخام غالباً ما يحتوي على أخطاء وشوائب يجب إصلاحها أولاً."
+        },
+        {
+            q: "الارتباط لا يعني بالضرورة السببية <bdi>(Correlation is not causation)</bdi>.",
+            options: ["صح", "خطأ"],
+            answer: 0,
+            exp: "صح. مجرد حدوث شيئين في نفس الوقت لا يعني أن أحدهما تسبب في الآخر؛ يجب البحث عن أدلة أقوى."
+        },
+        {
+            q: "القاعدة الذهبية في تصوير البيانات <bdi>(Data Visualization)</bdi> هي أن الرسم البياني المعقد ثلاثي الأبعاد أفضل لأنه يجذب الانتباه.",
+            options: ["صح", "خطأ"],
+            answer: 1,
+            exp: "خطأ. الرسم البسيط الذي يُفهم فوراً أفضل بكثير من المعقد الذي لا يُفهم."
+        },
+        {
+            q: "أي من الآتي يمثل الترتيب الصحيح لخطوات \"رحلة البيانات\" <bdi>(Data Journey)</bdi>؟",
+            options: [
+                "تحليل، جمع، تنظيف، سؤال، تصوير",
+                "سؤال، جمع، تنظيف، تحليل، تصوير <bdi>(Ask, Collect, Clean, Analyze, Visualize)</bdi>",
+                "جمع، تنظيف، سؤال، تصوير، تحليل",
+                "سؤال، تنظيف، جمع، تحليل، تصوير"
+            ],
+            answer: 1,
+            exp: "هذا هو التسلسل المنطقي. تخطي أي خطوة يفسد العملية بأكملها."
+        },
+        {
+            q: "بيانات \"عدد أكواب القهوة المباعة يومياً\" تُصنف على أنها:",
+            options: [
+                "كمي متصل <bdi>(Quantitative - Continuous)</bdi>",
+                "كمي منفصل <bdi>(Quantitative - Discrete)</bdi>",
+                "نوعي اسمي <bdi>(Qualitative - Nominal)</bdi>",
+                "نوعي ترتيبي <bdi>(Qualitative - Ordinal)</bdi>"
+            ],
+            answer: 1,
+            exp: "عدد الأكواب أرقام صحيحة، لا يمكن بيع \"نصف كوب\" قهوة، لذا فهي منفصلة وليست متصلة."
+        },
+        {
+            q: "تقييم العملاء للخدمة باستخدام (سيء، جيد، ممتاز)، ما هو نوع هذه البيانات؟",
+            options: [
+                "كمي منفصل <bdi>(Quantitative - Discrete)</bdi>",
+                "كمي متصل <bdi>(Quantitative - Continuous)</bdi>",
+                "نوعي اسمي <bdi>(Qualitative - Nominal)</bdi>",
+                "نوعي ترتيبي <bdi>(Qualitative - Ordinal)</bdi>"
+            ],
+            answer: 3,
+            exp: "هي نصوص (نوعية)، ولكن لها ترتيب منطقي تصاعدي (سيء، جيد، ممتاز) لذا هي ترتيبية."
+        },
+        {
+            q: "ما هو المخرج <bdi>(Deliverable)</bdi> الأساسي من الخطوة الأولى \"السؤال\" <bdi>(Ask)</bdi>؟",
+            options: [
+                "لوحة بيانات تفاعلية <bdi>(Dashboard)</bdi>",
+                "جملة مشكلة واضحة ومتفق عليها <bdi>(Agreed problem statement)</bdi>",
+                "بيانات خام خالية من الأخطاء",
+                "تقرير يوضح أسباب المشكلة"
+            ],
+            answer: 1,
+            exp: "الخطوة الأولى لا تنتج بيانات أو تقارير، بل تنتج اتفاقاً صريحاً ومكتوباً على المشكلة."
+        },
+        {
+            q: "\"لماذا انخفضت مبيعاتنا في شهر مارس؟\" يندرج تحت أي نوع من أنواع التحليل؟",
+            options: [
+                "التحليل الوصفي <bdi>(Descriptive)</bdi>",
+                "التحليل التشخيصي <bdi>(Diagnostic)</bdi>",
+                "التحليل التنبؤي <bdi>(Predictive)</bdi>",
+                "التحليل التوجيهي <bdi>(Prescriptive)</bdi>"
+            ],
+            answer: 1,
+            exp: "التحليل التشخيصي هو الذي يجيب على سؤال \"لماذا حدث ذلك؟\" لمعرفة جذور المشكلة."
+        },
+        {
+            q: "التحليل التوجيهي <bdi>(Prescriptive Analysis)</bdi> يركز على الإجابة عن سؤال:",
+            options: [
+                "ماذا حدث؟ <bdi>(What happened?)</bdi>",
+                "لماذا حدث؟ <bdi>(Why did it happen?)</bdi>",
+                "ماذا سيحدث؟ <bdi>(What will happen?)</bdi>",
+                "ماذا يجب أن نفعل حيال ذلك؟ <bdi>(What should we do?)</bdi>"
+            ],
+            answer: 3,
+            exp: "التحليل التوجيهي يعطي التوصية المباشرة (مثل الـ GPS) بناءً على ما سبق."
+        },
+        {
+            q: "أي من المقاييس التالية يُعد مقياساً خادعاً <bdi>(Vanity Metric)</bdi> لمقهى يبحث عن زيادة الأرباح؟",
+            options: [
+                "متوسط قيمة الفاتورة <bdi>(Average Ticket Size)</bdi>",
+                "عدد المناديل الورقية المستخدمة يومياً",
+                "معدل تحويل الزوار إلى مشترين <bdi>(Conversion Rate)</bdi>",
+                "تكلفة اكتساب العميل <bdi>(CAC)</bdi>"
+            ],
+            answer: 1,
+            exp: "عدد المناديل قد يكون كبيراً لكنه لا يفيد الإدارة في أي قرار لتحسين الأرباح، بينما الباقي مؤشرات حقيقية."
+        },
+        {
+            q: "كيف يمكنك اختبار ما إذا كان الرقم يمثل <bdi>KPI</bdi> حقيقي أم مجرد مقياس عادي؟",
+            options: [
+                "إذا كان الرقم يبدو مثيراً للإعجاب في العروض التقديمية.",
+                "إذا تغير هذا الرقم بنسبة 20%، هل سيغير الإدارة قراراً ما؟",
+                "إذا كان من الصعب حسابه.",
+                "إذا كان مرتبطاً بقسم التسويق فقط."
+            ],
+            answer: 1,
+            exp: "هذا هو الاختبار السحري. إذا لم يغير تغير الرقم أي قرار للأعمال، فهو مجرد مقياس عادي."
+        },
+        {
+            q: "الفارق الرئيسي بين \"البيانات\" <bdi>(Data)</bdi> و \"المعلومات\" <bdi>(Information)</bdi> هو:",
+            options: [
+                "البيانات دائماً أرقام، بينما المعلومات دائماً نصوص.",
+                "البيانات هي حقائق خام مشتتة، بينما المعلومات هي بيانات تم ترتيبها وتنظيمها.",
+                "البيانات تُستخدم في التحليل الوصفي، والمعلومات في التنبؤي.",
+                "لا يوجد فرق، هما نفس الشيء."
+            ],
+            answer: 1,
+            exp: "البيانات هي الفواتير المبعثرة (Noise)، عند ترتيبها في جدول منظم تصبح معلومات تفيد في اتخاذ القرار."
+        },
+        {
+            q: "في خطوة تنظيف البيانات <bdi>(Clean)</bdi>، أي من الإجراءات التالية يُعد خطأً؟",
+            options: [
+                "إزالة السجلات المكررة.",
+                "توحيد تنسيق الكلمات (مثل Latte و latte).",
+                "مسح البيانات التي لا تعجب المدير لكي يبدو التقرير إيجابياً.",
+                "التعامل مع القيم الشاذة <bdi>(Outliers)</bdi>."
+            ],
+            answer: 2,
+            exp: "التلاعب بالبيانات وتغيير النتيجة يتنافى مع أمانة التحليل."
+        },
+        {
+            q: "وفقاً لسلايد المهارات، الجانب \"التقني\" (البرمجة، الإحصاء) يمثل:",
+            options: [
+                "المهارة الوحيدة التي يحتاجها محلل البيانات.",
+                "عمود واحد فقط من أصل ثلاثة أعمدة (بجانب المهارات العامة والشخصية).",
+                "مهارة مطلوبة لمهندس البيانات فقط.",
+                "الجانب الأقل أهمية على الإطلاق."
+            ],
+            answer: 1,
+            exp: "المهارات التقنية تشكل جزءاً فقط، وهناك أيضاً المهارات الشخصية (التفكير النقدي) والعامة (التواصل)."
+        },
+        {
+            q: "(دراسة حالة): قال لك المدير: \"مبيعاتنا تنهار، قم بتحميل بيانات الأعضاء فوراً واصنع لي رسماً بيانياً\". ما الخطوة الكارثية التي تخطاها؟",
+            options: [
+                "خطوة التصوير <bdi>(Visualize)</bdi>.",
+                "خطوة التحليل <bdi>(Analyze)</bdi>.",
+                "خطوة تحديد السؤال / المشكلة بوضوح <bdi>(Ask)</bdi> وخطوة التنظيف.",
+                "لم يتخطَ أي خطوة."
+            ],
+            answer: 2,
+            exp: "المدير قفز مباشرة للتصوير متجاهلاً التحديد الدقيق للمشكلة، وطلب رسماً من بيانات خام دون تنظيفها."
+        },
+        {
+            q: "(دراسة حالة): لديك عمود \"أعمار الأعضاء\" وعمود \"نوع الاشتراك\" (أساسي، مميز، VIP). ما نوعها على الترتيب؟",
+            options: [
+                "الأعمار (كمي متصل) / الاشتراك (نوعي اسمي).",
+                "الأعمار (كمي منفصل) / الاشتراك (نوعي ترتيبي).",
+                "الأعمار (نوعي ترتيبي) / الاشتراك (كمي متصل).",
+                "كلاهما بيانات نوعية."
+            ],
+            answer: 1,
+            exp: "العمر يُعد بالسنين (منفصل). نوع الاشتراك هو نص له درجات وترتيب (لذا هو ترتيبي)."
+        },
+        {
+            q: "(دراسة حالة): اكتشفت أن سبب الإلغاءات هو إغلاق المسبح للصيانة في شهر مارس. ما نوع التحليل الذي قمت به للتو؟",
+            options: [
+                "تحليلي وصفي <bdi>(Descriptive)</bdi>",
+                "تحليل تشخيصي <bdi>(Diagnostic)</bdi>",
+                "تحليل تنبؤي <bdi>(Predictive)</bdi>",
+                "تحليل توجيهي <bdi>(Prescriptive)</bdi>"
+            ],
+            answer: 1,
+            exp: "أنت اكتشفت \"السبب\" الذي أدى للنتيجة. أنت تجيب على سؤال \"لماذا؟\"."
+        },
+        {
+            q: "(دراسة حالة): اقترحت على المدير إعطاء خصم 50% للأعضاء الذين ألغوا اشتراكهم لاسترجاعهم. هذا الاقتراح يمثل تحليل:",
+            options: [
+                "وصفي",
+                "تشخيصي",
+                "تنبؤي",
+                "توجيهي <bdi>(Prescriptive)</bdi>"
+            ],
+            answer: 3,
+            exp: "أنت لم تكتفِ بوصف المشكلة، بل أعطيت توصية بـ \"إجراء\" محدد لحلها."
+        },
+        {
+            q: "(دراسة حالة): أراد المدير وضع <bdi>KPI</bdi> لمتابعة نجاح التخفيضات. ما هو المؤشر الأفضل وما هو الخادع؟",
+            options: [
+                "الأفضل: زيادة المتابعين على إنستجرام / الخادع: معدل استرجاع الأعضاء.",
+                "الأفضل: معدل استرجاع الأعضاء / الخادع: عدد \"الإعجابات\" على المنشور.",
+                "الأفضل: زوار الموقع الإلكتروني / الخادع: الأرباح الشهرية.",
+                "جميعها مؤشرات رئيسية ممتازة."
+            ],
+            answer: 1,
+            exp: "معدل الاسترجاع يؤثر على الأرباح مباشرة ويقيس نجاح الخصم. أما الإعجابات فلا تضمن دفع أموال."
+        }
+    ];
+
+    const wrapper = document.getElementById('questions-wrapper');
+    
+    // Render Questions
+    quizData.forEach((q, index) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        
+        let optionsHtml = q.options.map((opt, i) => `
+            <label class="option-label">
+                <input type="radio" name="q${index}" value="${i}" required>
+                <span>${opt}</span>
+            </label>
+        `).join('');
+
+        card.innerHTML = `
+            <div class="question-title">${index + 1}. ${q.q}</div>
+            <div class="options">
+                ${optionsHtml}
+            </div>
+        `;
+        wrapper.appendChild(card);
+    });
+
+    // Handle Submit
+    document.getElementById('quiz-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const btn = document.getElementById('submit-btn');
+        btn.disabled = true;
+        btn.innerText = 'جاري إرسال النتيجة...';
+
+        const name = document.getElementById('student-name').value;
+        let score = 0;
+        let wrongAnswersData = [];
+        let htmlResults = '';
+
+        quizData.forEach((q, index) => {
+            const selected = parseInt(document.querySelector(`input[name="q${index}"]:checked`).value);
+            const isCorrect = selected === q.answer;
+            
+            if (isCorrect) score++;
+            else {
+                wrongAnswersData.push(`Q${index+1}: Chosen Option ${selected+1}`);
+            }
+
+            // Generate feedback HTML
+            htmlResults += `
+                <div class="result-item ${isCorrect ? 'correct' : 'wrong'}">
+                    <div class="result-header">
+                        ${isCorrect ? svgCheck : svgCross}
+                        <span>${index + 1}. ${q.q}</span>
+                    </div>
+                    <div><strong>إجابتك:</strong> ${q.options[selected]}</div>
+                    ${!isCorrect ? `
+                    <div class="explanation">
+                        ${svgInfo}
+                        <div>
+                            <strong>الإجابة الصحيحة:</strong> ${q.options[q.answer]}<br><br>
+                            <strong>التعليل:</strong> ${q.exp}
+                        </div>
+                    </div>` : ''}
+                </div>
+            `;
+        });
+
+        // Prepare data for Google Sheets
+        const payload = {
+            name: name,
+            score: `${score} / ${quizData.length}`,
+            wrongDetails: wrongAnswersData.join(' | ') || "No mistakes"
+        };
+
+        // Send to Google Sheets (Ignore CORS warnings by using plain text mode)
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        })
+        .then(response => {
+            // Show results regardless of successful sheet post (don't block the UI if GAS is slow)
+            showResults(score, htmlResults);
+        })
+        .catch(error => {
+            console.error('Error posting to sheet', error);
+            showResults(score, htmlResults); // Still show results to the student
+        });
+    });
+
+    function showResults(score, htmlResults) {
+        document.getElementById('quiz-container').style.display = 'none';
+        document.getElementById('results-container').style.display = 'block';
+        
+        document.getElementById('score-display').innerText = `${score} / ${quizData.length}`;
+        document.getElementById('score-message').innerText = 
+            score >= 20 ? 'ممتاز! لديك فهم عميق لأساسيات تحليل البيانات.' : 
+            score >= 12 ? 'جيد جداً، راجع التعليلات للأخطاء التي وقعت بها.' : 
+            'يجب عليك مراجعة الجلسة مرة أخرى لترسيخ المفاهيم.';
+            
+        document.getElementById('detailed-results').innerHTML = htmlResults;
+        window.scrollTo(0, 0);
+    }
+</script>
+
+</body>
+</html>
